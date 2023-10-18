@@ -1,0 +1,8 @@
+<mat-toolbar color="primary">
+    <span>{{headerName}}</span>
+    <span class="spacer"></span>
+    <button *ngIf="displayArrow" mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon" [routerLink]="[displayArrow]">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <ng-content select="[slot=addBook]"></ng-content>
+</mat-toolbar>

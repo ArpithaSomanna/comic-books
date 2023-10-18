@@ -1,0 +1,18 @@
+.mat-mdc-table {
+    width: 100%;
+    /* max-height: 350px;
+    overflow: auto; */
+}
+
+.mat-mdc-form-field {
+    font-size: 14px;
+    width: 100%;
+}
+
+td, th {
+    width: 25%;
+}
+
+.cursor {
+    cursor: pointer;
+}
