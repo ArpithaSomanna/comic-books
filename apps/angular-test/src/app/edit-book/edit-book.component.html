@@ -37,11 +37,11 @@
         <div class="col-md-4 col-sm-6 col-xs-12">
             <mat-form-field class="example-full-width">
                 <mat-label>Choose a Publication Date</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="published_date">
+                <input matInput [matDatepicker]="picker" formControlName="publication_date">
                 <mat-hint>MM/DD/YYYY</mat-hint>
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
-                <mat-error *ngIf="bookForm.controls['published_date'].touched && bookForm.controls['published_date'].errors">{{getErrorMessage(bookForm.controls['published_date'].errors, 'Publication Date')}}</mat-error>
+                <mat-error *ngIf="bookForm.controls['publication_date'].touched && bookForm.controls['publication_date'].errors">{{getErrorMessage(bookForm.controls['publication_date'].errors, 'Publication Date')}}</mat-error>
             </mat-form-field>
         </div>
         <div class="col-md-4 col-sm-6 col-xs-12">

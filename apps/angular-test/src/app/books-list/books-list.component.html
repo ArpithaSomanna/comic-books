@@ -4,7 +4,7 @@
             <angular-monorepo-header-nav headerName="Books List">
                 <ng-container slot="addBook">
                     <button mat-raised-button [routerLink]="['../add-book']">Add Book</button>
-                    <button style="margin-left: 5px;" mat-raised-button (click)="resetData()">Reset</button>
+                    <!-- <button style="margin-left: 5px;" mat-raised-button (click)="resetData()">Reset</button> -->
                 </ng-container> 
             </angular-monorepo-header-nav>
         </div>
@@ -52,7 +52,7 @@
                 <!-- Publication Date Column -->
                 <ng-container matColumnDef="publication_date">
                     <th mat-header-cell *matHeaderCellDef> Publication Date </th>
-                    <td mat-cell *matCellDef="let element"> {{element.publication_date}} </td>
+                    <td mat-cell *matCellDef="let element"> {{element.publication_date | date: 'dd/MM/yyyy'}} </td>
                 </ng-container>
                 <!-- Edit Column -->
                 <ng-container matColumnDef="edit" stickyEnd>
@@ -64,7 +64,7 @@
                 <!-- Delete Column -->
                 <ng-container matColumnDef="delete" stickyEnd>
                     <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
-                    <td class="cursor" mat-cell *matCellDef="let element" (click)="deleteBook(element.id)">
+                    <td class="cursor" mat-cell *matCellDef="let element" (click)="deleteExistingBook(element.id)">
                         <mat-icon>delete</mat-icon>
                     </td>
                 </ng-container>
@@ -73,10 +73,15 @@
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </mat-table>
             
-            <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+            <mat-paginator *ngIf="dataSource.data.length; else noRecords" [pageSizeOptions]="[5, 10, 20]"
                         showFirstLastButtons
                         aria-label="Select page of periodic elements">
             </mat-paginator>
+            <ng-template #noRecords>
+                <div class="text-center">
+                    <h2>No records found</h2>
+                </div>
+            </ng-template>
         </div>
     </div>
 </div>

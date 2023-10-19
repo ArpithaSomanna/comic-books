@@ -9,14 +9,16 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from '../material/material.module';
 import { HeaderNavComponent } from '../header-nav/header-nav.component';
-import { BookStoreModule } from '../store/book-store.module';
+import { Store } from '@ngrx/store';
+import { updateBook } from '../store/books.actions';
+import { bookSelector } from '../store/books.state';
 
 @Component({
   selector: 'angular-monorepo-edit-book',
   templateUrl: './edit-book.component.html',
   styleUrls: ['./edit-book.component.css'],
   standalone: true,
-  imports: [CommonModule, HttpClientModule, MaterialModule, ReactiveFormsModule, HeaderNavComponent, RouterModule, BookStoreModule],
+  imports: [CommonModule, HttpClientModule, MaterialModule, ReactiveFormsModule, HeaderNavComponent, RouterModule],
   providers: [BooksService, ErrorMessageService]
 })
 export class EditBookComponent implements OnInit {
@@ -24,14 +26,15 @@ export class EditBookComponent implements OnInit {
   errorMessage: any = '';
   publishersList: string[] = PublishersList;
   authorsList: string[] = AuthorsList;
-  currentBook!: BooksModel;
+  booksList!: BooksModel[];
   id!: string;
   constructor(
     private booksService: BooksService,
     private errorMessageService: ErrorMessageService,
     private formBuilder: FormBuilder,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private store: Store<BooksModel>
   ) {}
 
   ngOnInit(): void {
@@ -42,10 +45,10 @@ export class EditBookComponent implements OnInit {
   }
 
   getSelectedBook() {
-    this.booksService.getBooksFromStorage().subscribe(res => {
-     this.currentBook = res.data.find(book => book['id'] === this.id) as any;
-    });
-    this.createBookForm(this.currentBook);
+    this.store.select(bookSelector).subscribe(data => {
+      this.booksList = data;
+    })
+    this.createBookForm(this.booksList.find(data => data.id === this.id) as BooksModel);
   }
 
   createBookForm(data: BooksModel) {
@@ -57,7 +60,7 @@ export class EditBookComponent implements OnInit {
       excerpt: [data.excerpt],
       author: [data.author, Validators.required],
       publisher: [data.publisher],
-      published_date: [data.publication_date, Validators.required]
+      publication_date: [data.publication_date, Validators.required]
     });
   }
 
@@ -66,7 +69,7 @@ export class EditBookComponent implements OnInit {
   }
 
   onEditBook() {
-    this.booksService.updateExistingBook(this.bookForm.getRawValue());
+    this.store.dispatch(updateBook(this.bookForm.getRawValue()));
     this.router.navigate(['../']);
   }
 }

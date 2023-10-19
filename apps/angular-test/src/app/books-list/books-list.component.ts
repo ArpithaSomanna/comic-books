@@ -8,8 +8,10 @@ import { MatTableDataSource } from '@angular/material/table';
 import { BooksModel } from '../model/books-model';
 import { MatPaginator } from '@angular/material/paginator';
 import { HeaderNavComponent } from '../header-nav/header-nav.component';
-import { BookStoreModule } from '../store/book-store.module';
 import { Sort } from '@angular/material/sort';
+import { Store } from '@ngrx/store';
+import { addBook, deleteBook, updateBook } from '../store/books.actions';
+import { bookSelector } from '../store/books.state';
 
 @Component({
   selector: 'angular-monorepo-books-list',
@@ -21,7 +23,6 @@ import { Sort } from '@angular/material/sort';
     MaterialModule, 
     RouterModule, 
     HeaderNavComponent,
-    BookStoreModule
   ],
   providers: [BooksService]
 })
@@ -31,9 +32,10 @@ export class BooksListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'img', 'publication_date', 'genre', 'excerpt', 'author', 'publisher', 'edit', 'delete'];
   dataSource = new MatTableDataSource<BooksModel>();
   sortedData!: BooksModel[];
-
+  date: any
   constructor(
     private booksService: BooksService,
+    private store: Store<BooksModel>
   ) {}
 
   ngOnInit(): void {
@@ -46,14 +48,15 @@ export class BooksListComponent implements OnInit, AfterViewInit {
   }
 
   getBooksList() {
-    this.booksService.getBooksList().subscribe((res: any) => {
-      this.dataSource.data = res;      
-      this.sortedData = this.dataSource.data.slice();
+    this.store.select(bookSelector).subscribe(data => {
+      this.dataSource.data = data;
+      this.dataSource._updateChangeSubscription();
     });
   }
 
-  deleteBook(id: string) {
-    this.booksService.deleteExistingBook(id);
+  deleteExistingBook(id: string) {
+    const index = this.dataSource.data.findIndex(dtaa => dtaa.id === id);
+    this.store.dispatch(deleteBook(index));
   }
 
   sortData(sort: Sort) {
@@ -80,10 +83,5 @@ export class BooksListComponent implements OnInit, AfterViewInit {
   }
 
   resetData() {
-    this.booksService.getBooksFromStorage().subscribe(res => {
-      this.dataSource.data = res.data;
-      this.dataSource._updateChangeSubscription();
-      this.sortedData = this.dataSource.data.slice();
-    });
   }
 }

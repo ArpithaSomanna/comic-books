@@ -8,7 +8,6 @@ import { BooksService } from '../service/books.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorMessageService } from '../service/error-message.service';
 import { HeaderNavComponent } from '../header-nav/header-nav.component';
-import { BookStoreModule } from '../store/book-store.module';
 
 const routes: Route[] = [
     {
@@ -25,7 +24,6 @@ const routes: Route[] = [
     HttpClientModule,
     RouterModule.forChild(routes),
     HeaderNavComponent,
-    BookStoreModule
   ],
   exports: [
     RouterModule

@@ -5,6 +5,9 @@ import { ErrorMessageService } from '../service/error-message.service';
 import { AuthorsList, PublishersList } from '../model/books.constants';
 import { BooksModel } from '../model/books-model';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { addBook } from '../store/books.actions';
+import { bookSelector } from '../store/books.state';
 
 @Component({
   selector: 'angular-monorepo-add-book',
@@ -21,13 +24,14 @@ export class AddBookComponent implements OnInit {
     private booksService: BooksService,
     private errorMessageService: ErrorMessageService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private store: Store<BooksModel>
   ) {}
 
   ngOnInit(): void {
     this.createBookForm();
-    this.booksService.getBooksList().subscribe((res: any) => {
-      this.booksList = res;
+    this.store.select(bookSelector).subscribe(data => {
+      this.booksList = data;
     });
   }
 
@@ -40,7 +44,7 @@ export class AddBookComponent implements OnInit {
       excerpt: [''],
       author: [[''], [Validators.required]],
       publisher: [''],
-      published_date: [Date, Validators.required]
+      publication_date: [Date, Validators.required]
     });
   }
 
@@ -48,9 +52,11 @@ export class AddBookComponent implements OnInit {
     return this.errorMessageService.getErrorMessage(controls, hint);
   }
 
-  onAddBook() {
+  onAddBook() {    
+    this.bookForm.get('publication_date')?.setValue(new Date('11/10/2023'));
     this.bookForm.get('id')?.setValue((this.booksList.length + 1).toString());
-    this.booksService.addBookToStorage(this.bookForm.getRawValue());
+    this.store.dispatch(addBook(this.bookForm.getRawValue()));
+    console.log(this.bookForm.getRawValue())
     this.router.navigate(['../']);
   }
 }
